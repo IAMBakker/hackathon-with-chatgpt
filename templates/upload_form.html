@@ -41,28 +41,28 @@
         const candyType = document.querySelector('#candy-type');
         let aiResultCandyType
 
-form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-    const formData = new FormData(form);
-    const response = await fetch('http://localhost:5050/upload', {
-        method: 'POST',
-        body: formData
-    });
-    const result = await response.json();
+            const formData = new FormData(form);
+            const response = await fetch('http://localhost:5050/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
 
-    resultText.innerText = `Identified candy type: ${result.candy}`;
-    aiResultCandyType = result.candy;
-    resultDiv.style.display = 'block';
-    feedbackForm.style.display = 'block';
+            resultText.innerText = `Identified candy type: ${result.candy}`;
+            aiResultCandyType = result.candy;
+            resultDiv.style.display = 'block';
+            feedbackForm.style.display = 'block';
 
-    // Create an img element and set its source to the uploaded image
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(formData.get('image'));
+            // Create an img element and set its source to the uploaded image
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(formData.get('image'));
 
-    // Insert the img element before the feedback form
-    resultDiv.insertBefore(img, feedbackForm);
-});
+            // Insert the img element before the feedback form
+            resultDiv.insertBefore(img, feedbackForm);
+        });
 
 
         function showFeedbackForm() {

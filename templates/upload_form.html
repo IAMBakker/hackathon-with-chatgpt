@@ -13,6 +13,7 @@
     <div id="error-message" style="color: red; display: none;">Please upload an image.</div>
     <div id="result" style="display: none;">
         <p id="result-text"></p>
+        <div id="image-container"></div>
         <form id="feedback-form" style="display: none;">
             <p>Was this result correct?</p>
             <button type="button" onclick="submitFeedback(true)">Yes</button>
@@ -34,26 +35,35 @@
         const form = document.querySelector('#upload-form');
         const resultDiv = document.querySelector('#result');
         const resultText = document.querySelector('#result-text');
+        const imageContainer = document.querySelector('#image-container');
         const feedbackForm = document.querySelector('#feedback-form');
         const manualForm = document.querySelector('#manual-form');
         const candyType = document.querySelector('#candy-type');
         let aiResultCandyType
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-            const formData = new FormData(form);
-            const response = await fetch('http://localhost:5050/upload', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
+    const formData = new FormData(form);
+    const response = await fetch('http://localhost:5050/upload', {
+        method: 'POST',
+        body: formData
+    });
+    const result = await response.json();
 
-            resultText.innerText = `Identified candy type: ${result.candy}`;
-            aiResultCandyType = result.candy;
-            resultDiv.style.display = 'block';
-            feedbackForm.style.display = 'block';
-        });
+    resultText.innerText = `Identified candy type: ${result.candy}`;
+    aiResultCandyType = result.candy;
+    resultDiv.style.display = 'block';
+    feedbackForm.style.display = 'block';
+
+    // Create an img element and set its source to the uploaded image
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(formData.get('image'));
+
+    // Insert the img element before the feedback form
+    resultDiv.insertBefore(img, feedbackForm);
+});
+
 
         function showFeedbackForm() {
             feedbackForm.style.display = 'none';

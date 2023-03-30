@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Candy Image</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Upload Candy Image</h1>
+    <form id="upload-form">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image"><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#upload-form').submit(function(event) {
+                event.preventDefault();
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: 'http://localhost:5050/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#result').html('<p>The candy in the image is: ' + response.candy + '</p>');
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMessage = xhr.responseText || error;
+                        $('#result').html('<p>Error: ' + errorMessage + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

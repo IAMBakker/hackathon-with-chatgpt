@@ -1,42 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload Candy Image</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Candy Identification</title>
 </head>
 <body>
-    <h1>Upload Candy Image</h1>
-    <form id="upload-form">
-        <label for="image">Image:</label>
-        <input type="file" id="image" name="image"><br><br>
-        <button type="submit">Submit</button>
+    <h1>Candy Identification</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="image">Select an image of candy:</label>
+        <input type="file" name="image" id="image">
+        <input type="submit" value="Upload">
     </form>
-
-    <div id="result"></div>
+    <div id="result" style="display: none;">
+        <p id="result-text"></p>
+        <form id="feedback-form" style="display: none;">
+            <p>Was this result correct?</p>
+            <button type="button" onclick="submitFeedback(true)">Yes</button>
+            <button type="button" onclick="showFeedbackForm()">No</button>
+        </form>
+        <form id="manual-form" style="display: none;">
+            <p>Please select the correct candy type:</p>
+            <select name="candy-type" id="candy-type">
+                <option value="m&m">m&amp;m</option>
+                <option value="smarty">smarty</option>
+                <option value="m&m crispy">m&amp;m crispy</option>
+                <option value="skittle">skittle</option>
+            </select>
+            <button type="button" onclick="submitFeedback(false)">Submit</button>
+        </form>
+    </div>
 
     <script>
-        $(document).ready(function() {
-            $('#upload-form').submit(function(event) {
-                event.preventDefault();
+        const form = document.querySelector('#upload-form');
+        const resultDiv = document.querySelector('#result');
+        const resultText = document.querySelector('#result-text');
+        const feedbackForm = document.querySelector('#feedback-form');
+        const manualForm = document.querySelector('#manual-form');
+        const candyType = document.querySelector('#candy-type');
+        let aiResultCandyType
 
-                var formData = new FormData(this);
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-                $.ajax({
-                    url: 'http://localhost:5050/upload',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $('#result').html('<p>The candy in the image is: ' + response.candy + '</p>');
-                    },
-                    error: function(xhr, status, error) {
-                        var errorMessage = xhr.responseText || error;
-                        $('#result').html('<p>Error: ' + errorMessage + '</p>');
-                    }
-                });
+            const formData = new FormData(form);
+            const response = await fetch('http://localhost:5050/upload', {
+                method: 'POST',
+                body: formData
             });
+            const result = await response.json();
+
+            resultText.innerText = `Identified candy type: ${result.candy}`;
+            aiResultCandyType = result.candy;
+            resultDiv.style.display = 'block';
+            feedbackForm.style.display = 'block';
         });
+
+        function showFeedbackForm() {
+            feedbackForm.style.display = 'none';
+            manualForm.style.display = 'block';
+        }
+
+        async function submitFeedback(correct) {
+            const formData = new FormData(form);
+            const candy = correct ? resultText.innerText.split(': ')[1] : candyType.value;
+
+            if (correct) {
+                formData.append('candy', candy);
+                await fetch('http://localhost:5050/validationSuccess', {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                const data = new FormData();
+                data.append('image', formData.get('image'));
+                data.append('candy', candy);
+
+                await fetch('http://localhost:5050/validationFailed', {
+                    method: 'POST',
+                    body: data
+                });
+            }
+
+            resultDiv.style.display = 'none';
+            manualForm.style.display = 'none';
+            feedbackForm.style.display = 'none';
+            alert('Thank you for your feedback!');
+            form.reset();
+        }
     </script>
 </body>
 </html>

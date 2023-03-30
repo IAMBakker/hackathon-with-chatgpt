@@ -30,9 +30,31 @@ def upload():
     # Return the name of the candy
     return jsonify({'candy': candy})
 
+@app.route('/validationSuccess', methods=['POST'])
+def validation_success():
+    # Replace with your code to handle successful validation
+    image = request.files['image']
+    candy = request.form['candy']
+    image.save('validated/' + candy + '/' + image.filename)
+    return 'Success'
+
+@app.route('/validationFailed', methods=['POST'])
+def validation_failed():
+    # Replace with your code to handle failed validation
+    image = request.files['image']
+    candy = request.form['candy']
+    image.save('failed/' + candy + '/' + image.filename)
+    return 'Success'
+
 if __name__ == '__main__':
     # Create the uploads directory if it doesn't exist
-    os.makedirs('uploads', exist_ok=True)
-
+    os.makedirs('failed/m&m', exist_ok=True)
+    os.makedirs('failed/m&m crispy', exist_ok=True)
+    os.makedirs('failed/skittle', exist_ok=True)
+    os.makedirs('failed/smarty', exist_ok=True)
+    os.makedirs('validated/m&m', exist_ok=True)
+    os.makedirs('validated/m&m crispy', exist_ok=True)
+    os.makedirs('validated/skittle', exist_ok=True)
+    os.makedirs('validated/smarty', exist_ok=True)
     # Start the Flask application
     app.run(host="localhost", port=5050)

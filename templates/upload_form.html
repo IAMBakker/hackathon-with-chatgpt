@@ -8,7 +8,7 @@
     <form id="upload-form" enctype="multipart/form-data">
         <label for="image">Select an image of candy:</label>
         <input type="file" name="image" id="image">
-        <input type="submit" value="Upload">
+        <input type="submit" value="Upload" id="upload-button" disabled>
     </form>
     <div id="result" style="display: none;">
         <p id="result-text"></p>
@@ -36,7 +36,17 @@
         const feedbackForm = document.querySelector('#feedback-form');
         const manualForm = document.querySelector('#manual-form');
         const candyType = document.querySelector('#candy-type');
-        let aiResultCandyType
+        const uploadButton = document.querySelector('#upload-button');
+        let aiResultCandyType;
+
+        // Disable the Upload button if no file is selected
+        document.querySelector('#image').addEventListener('change', () => {
+            if (document.querySelector('#image').files.length === 0) {
+                uploadButton.disabled = true;
+            } else {
+                uploadButton.disabled = false;
+            }
+        });
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();

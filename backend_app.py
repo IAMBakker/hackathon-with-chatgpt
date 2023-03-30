@@ -35,7 +35,18 @@ def validation_success():
     # Replace with your code to handle successful validation
     image = request.files['image']
     candy = request.form['candy']
-    image.save('validated/' + candy + '/' + image.filename)
+    save_path = 'validated/' + candy + '/'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    file_path = save_path + image.filename
+    if os.path.exists(file_path):
+        # Append a number to the filename to make it unique
+        file_name, file_ext = os.path.splitext(image.filename)
+        i = 1
+        while os.path.exists(save_path + file_name + '_' + str(i) + file_ext):
+            i += 1
+        file_path = save_path + file_name + '_' + str(i) + file_ext
+    image.save(file_path)
     return 'Success'
 
 @app.route('/validationFailed', methods=['POST'])
@@ -43,7 +54,18 @@ def validation_failed():
     # Replace with your code to handle failed validation
     image = request.files['image']
     candy = request.form['candy']
-    image.save('failed/' + candy + '/' + image.filename)
+    save_path = 'failed/' + candy + '/'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    file_path = save_path + image.filename
+    if os.path.exists(file_path):
+        # Append a number to the filename to make it unique
+        file_name, file_ext = os.path.splitext(image.filename)
+        i = 1
+        while os.path.exists(save_path + file_name + '_' + str(i) + file_ext):
+            i += 1
+        file_path = save_path + file_name + '_' + str(i) + file_ext
+    image.save(file_path)
     return 'Success'
 
 if __name__ == '__main__':

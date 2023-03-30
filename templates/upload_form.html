@@ -7,9 +7,10 @@
     <h1>Candy Identification</h1>
     <form id="upload-form" enctype="multipart/form-data">
         <label for="image">Select an image of candy:</label>
-        <input type="file" name="image" id="image">
+        <input type="file" name="image" id="image" accept="image/*" required>
         <input type="submit" value="Upload">
     </form>
+    <div id="error-message" style="color: red; display: none;">Please upload an image.</div>
     <div id="result" style="display: none;">
         <p id="result-text"></p>
         <form id="feedback-form" style="display: none;">
